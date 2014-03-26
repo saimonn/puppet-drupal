@@ -31,7 +31,7 @@ class drupal(
 
   include mysql::server
   $sudo_mysql_admin_cmnd = '/etc/init.d/mysql, /bin/su mysql, /bin/su - mysql, /bin/su mysql -s /bin/bash, /bin/su - mysql -s /bin/bash'
-  class { '::mysql::administration':
+  class { '::administration::mysql':
     sudo_user => '%sigdev',
   }
 
