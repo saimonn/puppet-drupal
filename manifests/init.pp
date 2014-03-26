@@ -56,7 +56,7 @@ class drupal(
     password => 'cms',
   }
 
-  include mysql::backup
+  include backup::mysql
 
   mysql::config{'mysqld/max_allowed_packet':
     ensure => present,
