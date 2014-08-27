@@ -63,4 +63,8 @@ class drupal(
     value  => '16M',
   }
 
+  apache_c2c::module { 'php5':
+    ensure => present,
+  }
+
 }
