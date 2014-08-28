@@ -5,7 +5,6 @@ class drupal(
   $group          = 'www-data',
   $mysql_database = 'drupal',
 ) {
-  #  $drupal_dir = "${::apache_c2c::root}/${::georchestra::project_name}/private/drupal"
 
   file { $drupal_dir:
     ensure => 'directory',
@@ -17,16 +16,24 @@ class drupal(
   exec { "chown -R ${owner}:${group} ${drupal_dir}": }
   exec { "chmod -R u=rwX,g=rwX,o=rX ${drupal_dir}": }
 
-  apache_c2c::directive { 'alias-portail':
-    ensure    => present,
-    directive => "Alias /portail $drupal_dir",
-    vhost     => $::georchestra::project_name,
-  }
+  if defined(Class['apache::service']) {
+    # When using puppetlabs-apache
+    include ::apache::mod::php
+  } else {
+    apache_c2c::directive { 'alias-portail':
+      ensure    => present,
+      directive => "Alias /portail $drupal_dir",
+      vhost     => $::georchestra::project_name,
+    }
 
-  apache_c2c::directive{ 'rewrite-slash':
-    ensure    => present,
-    vhost     => $vhost,
-    directive => 'RewriteRule ^/$ /portail/ [R]',
+    apache_c2c::directive{ 'rewrite-slash':
+      ensure    => present,
+      vhost     => $vhost,
+      directive => 'RewriteRule ^/$ /portail/ [R]',
+    }
+    apache_c2c::module { 'php5':
+      ensure => present,
+    }
   }
 
   include mysql::server
@@ -61,10 +68,6 @@ class drupal(
   mysql::config{'mysqld/max_allowed_packet':
     ensure => present,
     value  => '16M',
-  }
-
-  apache_c2c::module { 'php5':
-    ensure => present,
   }
 
 }
