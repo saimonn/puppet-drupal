@@ -19,6 +19,15 @@ class drupal(
   if defined(Class['apache::service']) {
     # When using puppetlabs-apache
     include ::apache::mod::php
+
+    file { "/var/www/${vhost}/conf/drupal.conf":
+      ensure  => file,
+      content => "Alias /portail ${drupal_dir}
+RewriteRule ^/$ /portail/ [R]
+<Directory \"${drupal_dir}\">
+  AllowOverride All
+</Directory>",
+    }
   } else {
     apache_c2c::directive { 'alias-portail':
       ensure    => present,
