@@ -1,3 +1,4 @@
+# try to install and configure drupal
 class drupal(
   $vhost,
   $drupal_dir     = "${::apache_c2c::root}/${vhost}/private/drupal",
@@ -31,7 +32,7 @@ RewriteRule ^/$ /portail/ [R]
   } else {
     apache_c2c::directive { 'alias-portail':
       ensure    => present,
-      directive => "Alias /portail $drupal_dir",
+      directive => "Alias /portail ${drupal_dir}",
       vhost     => $::georchestra::project_name,
     }
 
