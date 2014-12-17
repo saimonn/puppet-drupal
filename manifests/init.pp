@@ -14,8 +14,13 @@ class drupal(
     mode   => '2775',
   }
 
-  exec { "chown -R ${owner}:${group} ${drupal_dir}": }
-  exec { "chmod -R u=rwX,g=rwX,o=rX ${drupal_dir}": }
+  cron { 'drupal fix permissions maintenance':
+    ensure  => present,
+    command => "ionice -c3 chown -R ${owner}:${group} ${drupal_dir} ; ionice -c3 chmod -R u=rwX,g=rwX,o=rX ${drupal_dir}",
+    user    => 'root',
+    hour    => fqdn_rand(4)+2,
+    minute  => fqdn_rand(60),
+  }
 
   if defined(Class['apache::service']) {
     # When using puppetlabs-apache
